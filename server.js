@@ -1,22 +1,47 @@
-//sever creation 
+const express=require("express");
 
-const http = require("http");
+const app=express();
+app.use(express.json());
 
-const port = 8081;
+const port =8081;
 
-const toDoList = ["Need to learn", "Need to code"];
+const toDoList=["Need to Learn","Need to Code"];
 
 
-http
-.createServer((req,res) => {
-//     res.writeHead(200, {"content-Type": "text/html"});
-//     res.write("<h4>Hello ,srihari my New Server</h4>");
-//     res.end();
-
-})
-.listen(port, () => {
-    console.log(`my Nodejs server started on port ${port}`);
+// http://localhost:8081/todos
+app.get("/todos",(req,res) =>{
+    res.status(200).send(toDoList);
 });
 
+app.post("/todos",(req,res) =>{
+    let newtoDOItem= req.body.item;
+    toDoList.push(newtoDOItem);
+    res.status(201).send({
+        message : "The todo Got Added Sucessfully"
+    })
+})
 
-// http://localhost:8081
+app.delete("/todos",(req,res) =>{
+    const itemToDelete = req.body.item;
+
+    toDoList.find((element,index) =>{
+        if (element === itemToDelete){
+            toDoList.splice(index, 1);
+        }
+    });
+    res.status(202).send({
+        message:`Deleted item - ${req.body.item}`
+    });
+});
+
+app.all("/todos",(req,res) =>{
+    res.status(501).send();
+});
+
+app.all("*", (req,res) =>{
+    res.status(404).send();
+});
+
+app.listen(port,() =>{
+    console.log(`Node js server started on ${port}`);
+});
